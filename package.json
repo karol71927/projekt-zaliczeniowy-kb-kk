@@ -1,0 +1,27 @@
+{
+  "name": "lubimyczytac",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node .",
+    "watch": "nodemon --inspect .",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/KISiM-AGH/projekt-zaliczeniowy-kb-kk.git"
+  },
+  "author": "KB KK",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/KISiM-AGH/projekt-zaliczeniowy-kb-kk/issues"
+  },
+  "homepage": "https://github.com/KISiM-AGH/projekt-zaliczeniowy-kb-kk#readme",
+  "dependencies": {
+    "express": "^4.17.1"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.6"
+  }
+}
