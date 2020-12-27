@@ -1,7 +1,5 @@
 const {Model} = require('objection');
 const knex = require('../knex');
-const {UserModel} = require('user.model');
-const {BookModel} = require('book.model');
 
 Model.knex(knex);
 
@@ -19,22 +17,23 @@ class ListModel extends Model{
             }
         }
     }
-
-    static relationMappings = {
-        users: {
-            relation: Model.BelongsToOneRelation,
-            modelClass: UserModel,
-            join: {
-                from: 'lists.ID_user',
-                to: 'users.ID_user'
-            }
-        },
-        books: {
-            relation: Model.BelongsToOneRelation,
-            modelClass: BookModel,
-            join: {
-                from: 'lists.ID_book',
-                to: 'books.ID_book'
+    static get relationMappings() {
+        return {
+            users: {
+                relation: Model.BelongsToOneRelation,
+                modelClass: require('./user.model'),
+                join: {
+                    from: 'lists.ID_user',
+                    to: 'users.ID_user'
+                }
+            },
+            books: {
+                relation: Model.BelongsToOneRelation,
+                modelClass: require('./book.model'),
+                join: {
+                    from: 'lists.ID_book',
+                    to: 'books.ID_book'
+                }
             }
         }
     }

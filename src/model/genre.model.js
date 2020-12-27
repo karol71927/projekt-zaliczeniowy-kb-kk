@@ -1,6 +1,5 @@
 const {Model} = require('objection');
 const knex = require('../knex');
-const {BookModel} = require('book.model')
 
 Model.knex(knex);
 
@@ -9,23 +8,27 @@ class GenreModel extends Model{
         return 'genres';
     }
 
+    static get idColumn(){
+        return 'ID_genre';
+    }
+
     static get jsonSchema(){
         return {
             type: 'object',
             properties: {
-                ID_genre: {type: 'integer'},
                 name: {type: 'string'}
             }
         }
     }
-
-    static relationMappings = {
-        books: {
-            relation: Model.HasManyRelation,
-            modelClass: BookModel,
-            join: {
-                from: 'genres.ID_genre',
-                to: 'books.ID_genre'
+    static get relationMappings() {
+        return {
+            books: {
+                relation: Model.HasManyRelation,
+                modelClass: require('./book.model'),
+                join: {
+                    from: 'genres.ID_genre',
+                    to: 'books.ID_genre'
+                }
             }
         }
     }

@@ -1,7 +1,5 @@
 const {Model} = require('objection');
 const knex = require('../knex');
-const {BookModel} = require('book.model');
-const {UserModel} = require('user.model')
 
 Model.knex(knex);
 
@@ -10,11 +8,14 @@ class ReviewModel extends Model {
         return 'reviews';
     }
 
+    static get idColumn(){
+        return 'ID_review';
+    }
+
     static get jsonSchema(){
         return {
             type: 'object',
             properties: {
-                ID_review: {type: 'integer'},
                 ID_book: {type: 'integer'},
                 ID_user: {type: 'integer'},
                 contents: {type: 'string'},
@@ -24,21 +25,23 @@ class ReviewModel extends Model {
         }
     }
 
-    static relationMappings = {
-        books: {
-            relation: Model.BelongsToOneRelation,
-            modelClass: BookModel,
-            join: {
-                from: 'reviews.ID_book',
-                to: 'books.ID_book'
-            }
-        },
-        users:{
-            relation: Model.BelongsToOneRelation,
-            modelClass: UserModel,
-            join: {
-                from: 'reviews.ID_user',
-                to: 'users.ID_user'
+    static get relationMappings() {
+        return {
+            books: {
+                relation: Model.BelongsToOneRelation,
+                modelClass: require('./book.model'),
+                join: {
+                    from: 'reviews.ID_book',
+                    to: 'books.ID_book'
+                }
+            },
+            users:{
+                relation: Model.BelongsToOneRelation,
+                modelClass: require('./user.model'),
+                join: {
+                    from: 'reviews.ID_user',
+                    to: 'users.ID_user'
+                }
             }
         }
     }
