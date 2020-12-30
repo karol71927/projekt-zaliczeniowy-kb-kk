@@ -1,5 +1,6 @@
 const {Model} = require('objection')
 const knex = require('../knex')
+const argon2 = require('argon2')
 
 Model.knex(knex);
 
@@ -18,12 +19,41 @@ class UserModel extends Model{
             properties: {
                 nickname: {type: 'string'},
                 login: {type: 'string'},
-                password: {type: 'string'},
-                status: {type: 'string'},
+                password: {
+                    type: 'string',
+                    minLength: 6,
+                    maxLength: 20
+                },
+                status: {
+                    type: 'string',
+                    enum: ['user','admin']
+                },
                 email: {type: 'string'}
             }
         }
     }
+
+    async $beforeInsert(context) {
+        await super.$beforeInsert(context)
+
+        return this.generateHash()
+    }
+
+    async $beforeUpdate(options, context) {
+        await super.$beforeUpdate(options, context)
+
+        if (options.patch) {
+            return false
+        }
+
+        return this.generateHash()
+    }
+
+    async generateHash() {
+        const hash = await argon2.hash(this.password,{type: argon2.argon2id})
+        this.password = hash
+    }
+
 
     static get relationMappings() {
         return {
@@ -47,5 +77,4 @@ class UserModel extends Model{
     }
 }
 
-module.exports = UserModel;
-
+module.exports = UserModel
