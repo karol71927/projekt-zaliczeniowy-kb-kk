@@ -14,7 +14,8 @@ class ListModel extends Model{
             properties:{
                 ID_user: {type: 'integer'},
                 ID_book: {type: 'integer'}
-            }
+            },
+            required: ['ID_user', 'ID_book']
         }
     }
     static get relationMappings() {

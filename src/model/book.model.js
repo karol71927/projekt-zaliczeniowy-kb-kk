@@ -23,7 +23,8 @@ class BookModel extends Model{
                 ID_genre: {type: 'integer'},
                 releaseDate: {type: 'date'},
                 ID_author: {type: 'integer'}
-            }
+            },
+            required: ["title", "description", "pages", "ID_publisher", "ID_genre", "releaseDate", "ID_author"]
         }
     }
 

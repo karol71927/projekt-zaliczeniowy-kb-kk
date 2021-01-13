@@ -16,11 +16,11 @@ class AuthorModel extends Model {
         return{
             type: 'object',
             properties: {
-                ID_author: {type: 'integer'},
                 name: {type: 'string'},
                 surname: {type: 'string'},
                 info: {type: 'string'}
-            }
+            },
+            required: ['name', 'surname', 'info']
         }
     }
 

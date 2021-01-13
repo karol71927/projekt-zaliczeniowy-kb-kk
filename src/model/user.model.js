@@ -29,7 +29,8 @@ class UserModel extends Model{
                     enum: ['user','admin']
                 },
                 email: {type: 'string'}
-            }
+            },
+            required: ['nickname', 'login', 'password', 'email']
         }
     }
 
@@ -41,7 +42,6 @@ class UserModel extends Model{
 
     async $beforeUpdate(options, context) {
         await super.$beforeUpdate(options, context)
-
         if (options.patch) {
             return false
         }
@@ -50,7 +50,7 @@ class UserModel extends Model{
     }
 
     async generateHash() {
-        const hash = await argon2.hash(this.password,{type: argon2.argon2id})
+        const hash = await argon2.hash(this.password, {type: argon2.argon2id})
         this.password = hash
     }
 
@@ -78,3 +78,5 @@ class UserModel extends Model{
 }
 
 module.exports = UserModel
+
+

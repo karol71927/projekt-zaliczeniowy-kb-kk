@@ -21,7 +21,8 @@ class ReviewModel extends Model {
                 contents: {type: 'string'},
                 date: {type: 'date'},
                 rate: {type: 'integer'}
-            }
+            },
+            required: ['ID_book', 'ID_user', 'contents', 'date', 'rate']
         }
     }
 

@@ -17,7 +17,8 @@ class PublisherModel extends Model{
             type: 'object',
             properties: {
                 name: {type: 'string'}
-            }
+            },
+            required: ['name']
         }
     }
 

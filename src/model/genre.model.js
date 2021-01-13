@@ -17,7 +17,8 @@ class GenreModel extends Model{
             type: 'object',
             properties: {
                 name: {type: 'string'}
-            }
+            },
+            required: ['name']
         }
     }
     static get relationMappings() {
@@ -28,6 +29,18 @@ class GenreModel extends Model{
                 join: {
                     from: 'genres.ID_genre',
                     to: 'books.ID_genre'
+                }
+            },
+            authors: {
+                relation: Model.ManyToManyRelation,
+                modelClass: require('./author.model'),
+                join: {
+                    from: 'genres.ID_genre',
+                    through:{
+                        from: 'books.ID_genre',
+                        to: 'books.ID_author'
+                    },
+                    to: 'authors.ID_author'
                 }
             }
         }
