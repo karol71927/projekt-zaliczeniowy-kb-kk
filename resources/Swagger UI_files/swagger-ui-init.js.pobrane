@@ -1,0 +1,1220 @@
+
+window.onload = function() {
+  // Build a system
+  var url = window.location.search.match(/url=([^&]+)/);
+  if (url && url.length > 1) {
+    url = decodeURIComponent(url[1]);
+  } else {
+    url = window.location.origin;
+  }
+  var options = {
+  "swaggerDoc": {
+    "info": {
+      "title": "Lubimy czytać",
+      "description": "Projekt II",
+      "contact": {
+        "name": "KB KK"
+      },
+      "servers": [
+        "http://localhost:9000"
+      ]
+    },
+    "securityDefinitions": {
+      "basicAuth": {
+        "type": "basic"
+      },
+      "cookieAuth": {
+        "type": "apiKey",
+        "in": "cookie",
+        "name": "auth"
+      }
+    },
+    "definitions": {
+      "Books": {
+        "type": "object",
+        "properties": {
+          "ID_book": {
+            "type": "integer"
+          },
+          "title": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "pages": {
+            "type": "integer"
+          },
+          "ID_publisher": {
+            "type": "integer"
+          },
+          "ID_genre": {
+            "type": "integer"
+          },
+          "releaseDate": {
+            "type": "date"
+          },
+          "ID_author": {
+            "type": "string"
+          }
+        }
+      },
+      "Authors": {
+        "type": "object",
+        "properties": {
+          "ID_author": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
+          },
+          "surname": {
+            "type": "string"
+          },
+          "info": {
+            "type": "string"
+          }
+        }
+      },
+      "Publishers": {
+        "type": "object",
+        "properties": {
+          "ID_publisher": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
+          }
+        }
+      },
+      "Genres": {
+        "type": "object",
+        "properties": {
+          "ID_genre": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
+          }
+        }
+      },
+      "Lists": {
+        "type": "object",
+        "properties": {
+          "ID_book": {
+            "type": "integer"
+          },
+          "ID_user": {
+            "type": "integer"
+          }
+        }
+      },
+      "Reviews": {
+        "type": "object",
+        "properties": {
+          "ID_review": {
+            "type": "integer"
+          },
+          "ID_book": {
+            "type": "integer"
+          },
+          "ID_user": {
+            "type": "integer"
+          },
+          "contents": {
+            "type": "string"
+          },
+          "date": {
+            "type": "date"
+          },
+          "rate": {
+            "type": "integer"
+          }
+        }
+      },
+      "Users": {
+        "type": "object",
+        "properties": {
+          "ID_user": {
+            "type": "integer"
+          },
+          "nickname": {
+            "type": "string"
+          },
+          "login": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          }
+        }
+      },
+      "Logs": {
+        "type": "object",
+        "properties": {
+          "ID_log": {
+            "type": "integer"
+          },
+          "description": {
+            "type": "string"
+          },
+          "code": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "swagger": "2.0",
+    "paths": {
+      "/api/auth": {
+        "post": {
+          "parameters": [
+            {
+              "in": "header",
+              "name": "username",
+              "type": "string",
+              "required": true
+            },
+            {
+              "in": "header",
+              "name": "password",
+              "type": "string",
+              "required": true
+            }
+          ],
+          "description": "Use to log in and get JWT",
+          "responses": {
+            "201": {
+              "description": "User successfully logged in",
+              "headers": {
+                "Set-Cookie": {
+                  "schema": {
+                    "type": "string"
+                  }
+                }
+              }
+            },
+            "401": {
+              "description": "User failed to log in because of wrong password or lack of data"
+            }
+          }
+        }
+      },
+      "/api/authors": {
+        "get": {
+          "tags": [
+            "authors"
+          ],
+          "description": "Use to show all authors",
+          "responses": {
+            "200": {
+              "description": "A successful response"
+            }
+          }
+        },
+        "post": {
+          "tags": [
+            "authors"
+          ],
+          "parameters": [
+            {
+              "in": "body",
+              "name": "author",
+              "description": "The author to create",
+              "schema": {
+                "type": "object",
+                "required": [
+                  "name",
+                  "surname",
+                  "info"
+                ],
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "surname": {
+                    "type": "string"
+                  },
+                  "info": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          ],
+          "description": "Add author to DB",
+          "responses": {
+            "201": {
+              "description": "Author created"
+            },
+            "401": {
+              "description": "Unauthorized for a user"
+            }
+          }
+        }
+      },
+      "/api/authors/{id}": {
+        "get": {
+          "tags": [
+            "authors"
+          ],
+          "parameters": [
+            {
+              "in": "path",
+              "name": "id",
+              "required": true,
+              "type": "integer",
+              "description": "Author ID"
+            }
+          ],
+          "description": "Use to show an author by ID",
+          "responses": {
+            "200": {
+              "description": "A successful response"
+            },
+            "404": {
+              "description": "Author not found"
+            }
+          }
+        },
+        "delete": {
+          "tags": [
+            "authors"
+          ],
+          "parameters": [
+            {
+              "in": "path",
+              "name": "id",
+              "required": true,
+              "type": "integer",
+              "description": "Author ID"
+            }
+          ],
+          "description": "Use to delete an author by ID",
+          "responses": {
+            "204": {
+              "description": "Author deleted successfully"
+            },
+            "401": {
+              "description": "Unauthorized for a user"
+            },
+            "404": {
+              "description": "Author not found"
+            }
+          }
+        },
+        "put": {
+          "tags": [
+            "authors"
+          ],
+          "parameters": [
+            {
+              "in": "path",
+              "name": "id",
+              "required": true,
+              "type": "integer",
+              "description": "Author ID"
+            },
+            {
+              "in": "body",
+              "name": "author",
+              "description": "Properties to update",
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "surname": {
+                    "type": "string"
+                  },
+                  "info": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          ],
+          "description": "Use to update an author",
+          "responses": {
+            "201": {
+              "description": "Author updated successfully"
+            },
+            "401": {
+              "description": "Unauthorized for a user"
+            },
+            "404": {
+              "description": "Author not found"
+            }
+          }
+        }
+      },
+      "/api/books": {
+        "get": {
+          "tags": [
+            "books"
+          ],
+          "description": "Use to show all books",
+          "responses": {
+            "200": {
+              "description": "A successful response"
+            }
+          }
+        },
+        "post": {
+          "tags": [
+            "books"
+          ],
+          "parameters": [
+            {
+              "in": "body",
+              "name": "book",
+              "description": "The book to create",
+              "schema": {
+                "type": "object",
+                "required": [
+                  "title",
+                  "description",
+                  "pages",
+                  "ID_publisher",
+                  "ID_genre",
+                  "releaseDate",
+                  "ID_author"
+                ],
+                "properties": {
+                  "title": {
+                    "type": "string"
+                  },
+                  "description": {
+                    "type": "string"
+                  },
+                  "pages": {
+                    "type": "integer"
+                  },
+                  "ID_publisher": {
+                    "type": "integer"
+                  },
+                  "ID_genre": {
+                    "type": "integer"
+                  },
+                  "releaseDate": {
+                    "type": "string"
+                  },
+                  "ID_author": {
+                    "type": "integer"
+                  }
+                }
+              }
+            }
+          ],
+          "description": "Use to add book to DB",
+          "responses": {
+            "201": {
+              "description": "Book created"
+            },
+            "401": {
+              "description": "Unauthorized for a user"
+            }
+          }
+        }
+      },
+      "/api/books/{id}": {
+        "get": {
+          "tags": [
+            "books"
+          ],
+          "parameters": [
+            {
+              "in": "path",
+              "name": "id",
+              "required": true,
+              "type": "integer",
+              "description": "Book ID"
+            }
+          ],
+          "description": "Use to show a book by ID",
+          "responses": {
+            "200": {
+              "description": "A successful response"
+            },
+            "404": {
+              "description": "Book not found"
+            }
+          }
+        },
+        "delete": {
+          "tags": [
+            "books"
+          ],
+          "parameters": [
+            {
+              "in": "path",
+              "name": "id",
+              "required": true,
+              "type": "integer",
+              "description": "Book ID"
+            }
+          ],
+          "description": "Use to delete a book by ID",
+          "responses": {
+            "204": {
+              "description": "Book deleted successfully"
+            },
+            "401": {
+              "description": "Unauthorized for a user"
+            },
+            "404": {
+              "description": "Book not found"
+            }
+          }
+        },
+        "put": {
+          "tags": [
+            "books"
+          ],
+          "parameters": [
+            {
+              "in": "path",
+              "name": "id",
+              "required": true,
+              "type": "integer",
+              "description": "Book ID"
+            },
+            {
+              "in": "body",
+              "name": "book",
+              "description": "Properties to update",
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "title": {
+                    "type": "string"
+                  },
+                  "description": {
+                    "type": "string"
+                  },
+                  "pages": {
+                    "type": "integer"
+                  },
+                  "ID_publisher": {
+                    "type": "integer"
+                  },
+                  "ID_genre": {
+                    "type": "integer"
+                  },
+                  "releaseDate": {
+                    "type": "string"
+                  },
+                  "ID_author": {
+                    "type": "integer"
+                  }
+                }
+              }
+            }
+          ],
+          "description": "Use to update a book",
+          "responses": {
+            "201": {
+              "description": "Book updated successfully"
+            },
+            "401": {
+              "description": "Unauthorized for a user"
+            },
+            "404": {
+              "description": "Book not found"
+            }
+          }
+        }
+      },
+      "/api/genres": {
+        "get": {
+          "tags": [
+            "genres"
+          ],
+          "description": "Use to show all genres",
+          "responses": {
+            "200": {
+              "description": "A successful response"
+            }
+          }
+        },
+        "post": {
+          "tags": [
+            "genres"
+          ],
+          "parameters": [
+            {
+              "in": "body",
+              "name": "genre",
+              "description": "The genre to create",
+              "schema": {
+                "type": "object",
+                "required": [
+                  "name"
+                ],
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          ],
+          "description": "Use to add genre to DB",
+          "responses": {
+            "201": {
+              "description": "Genre created"
+            },
+            "401": {
+              "description": "Unauthorized for a user"
+            }
+          }
+        }
+      },
+      "/api/genres/{id}": {
+        "get": {
+          "tags": [
+            "genres"
+          ],
+          "parameters": [
+            {
+              "in": "path",
+              "name": "id",
+              "required": true,
+              "type": "integer",
+              "description": "Genre ID"
+            }
+          ],
+          "description": "Use to show a genre by ID",
+          "responses": {
+            "200": {
+              "description": "A successful response"
+            },
+            "404": {
+              "description": "Genre not found"
+            }
+          }
+        },
+        "delete": {
+          "tags": [
+            "genres"
+          ],
+          "parameters": [
+            {
+              "in": "path",
+              "name": "id",
+              "required": true,
+              "type": "integer",
+              "description": "Genre ID"
+            }
+          ],
+          "description": "Use to delete a genre by ID",
+          "responses": {
+            "204": {
+              "description": "Genre deleted successfully"
+            },
+            "401": {
+              "description": "Unauthorized for a user"
+            },
+            "404": {
+              "description": "Genre not found"
+            }
+          }
+        },
+        "put": {
+          "tags": [
+            "genres"
+          ],
+          "parameters": [
+            {
+              "in": "path",
+              "name": "id",
+              "required": true,
+              "type": "integer",
+              "description": "Genre ID"
+            },
+            {
+              "in": "body",
+              "name": "genre",
+              "description": "Properties to update",
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          ],
+          "description": "Use to update a genre",
+          "responses": {
+            "201": {
+              "description": "Genre updated successfully"
+            },
+            "401": {
+              "description": "Unauthorized for a user"
+            },
+            "404": {
+              "description": "Genre not found"
+            }
+          }
+        }
+      },
+      "/api/publishers": {
+        "get": {
+          "tags": [
+            "publishers"
+          ],
+          "description": "Use to show all publishers",
+          "responses": {
+            "200": {
+              "description": "A successful response"
+            }
+          }
+        },
+        "post": {
+          "tags": [
+            "publishers"
+          ],
+          "parameters": [
+            {
+              "in": "body",
+              "name": "publisher",
+              "description": "The publisher to create",
+              "schema": {
+                "type": "object",
+                "required": [
+                  "name"
+                ],
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          ],
+          "description": "Use to add publisher to DB",
+          "responses": {
+            "201": {
+              "description": "Publisher created"
+            },
+            "401": {
+              "description": "Unauthorized for a user"
+            }
+          }
+        }
+      },
+      "/api/publishers/{id}": {
+        "get": {
+          "tags": [
+            "publishers"
+          ],
+          "parameters": [
+            {
+              "in": "path",
+              "name": "id",
+              "required": true,
+              "type": "integer",
+              "description": "Publisher ID"
+            }
+          ],
+          "description": "Use to show a publisher by ID",
+          "responses": {
+            "200": {
+              "description": "A successful response"
+            },
+            "404": {
+              "description": "Publisher not found"
+            }
+          }
+        },
+        "delete": {
+          "tags": [
+            "publishers"
+          ],
+          "parameters": [
+            {
+              "in": "path",
+              "name": "id",
+              "required": true,
+              "type": "integer",
+              "description": "Publisher ID"
+            }
+          ],
+          "description": "Use to delete a publisher by ID",
+          "responses": {
+            "204": {
+              "description": "Publisher deleted successfully"
+            },
+            "401": {
+              "description": "Unauthorized for a user"
+            },
+            "404": {
+              "description": "Publisher not found"
+            }
+          }
+        },
+        "put": {
+          "tags": [
+            "publishers"
+          ],
+          "parameters": [
+            {
+              "in": "path",
+              "name": "id",
+              "required": true,
+              "type": "integer",
+              "description": "Publisher ID"
+            },
+            {
+              "in": "body",
+              "name": "publisher",
+              "description": "Properties to update",
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          ],
+          "description": "Use to update a publisher",
+          "responses": {
+            "201": {
+              "description": "Publisher updated successfully"
+            },
+            "401": {
+              "description": "Unauthorized for a user"
+            },
+            "404": {
+              "description": "Publisher not found"
+            }
+          }
+        }
+      },
+      "/api/reviews": {
+        "get": {
+          "tags": [
+            "reviews"
+          ],
+          "description": "Use to show all reviews",
+          "responses": {
+            "200": {
+              "description": "A successful response"
+            }
+          }
+        },
+        "post": {
+          "tags": [
+            "reviews"
+          ],
+          "parameters": [
+            {
+              "in": "body",
+              "name": "review",
+              "description": "The review to create",
+              "schema": {
+                "type": "object",
+                "required": [
+                  "ID_book",
+                  "ID_user",
+                  "contents",
+                  "date",
+                  "rate"
+                ],
+                "properties": {
+                  "ID_book": {
+                    "type": "integer"
+                  },
+                  "ID_user": {
+                    "type": "integer"
+                  },
+                  "contents": {
+                    "type": "string"
+                  },
+                  "date": {
+                    "type": "string"
+                  },
+                  "rate": {
+                    "type": "integer"
+                  }
+                }
+              }
+            }
+          ],
+          "description": "Use to add review to DB",
+          "responses": {
+            "201": {
+              "description": "Review created"
+            }
+          }
+        }
+      },
+      "/api/reviews/{id}": {
+        "get": {
+          "tags": [
+            "reviews"
+          ],
+          "parameters": [
+            {
+              "in": "path",
+              "name": "id",
+              "required": true,
+              "type": "integer",
+              "description": "Review ID"
+            }
+          ],
+          "description": "Use to show a review by ID",
+          "responses": {
+            "200": {
+              "description": "A successful response"
+            },
+            "404": {
+              "description": "Review not found"
+            }
+          }
+        },
+        "delete": {
+          "tags": [
+            "reviews"
+          ],
+          "parameters": [
+            {
+              "in": "path",
+              "name": "id",
+              "required": true,
+              "type": "integer",
+              "description": "Review ID"
+            }
+          ],
+          "description": "Use to delete a review by ID",
+          "responses": {
+            "204": {
+              "description": "Review deleted successfully"
+            },
+            "401": {
+              "description": "Unauthorized for this user"
+            },
+            "404": {
+              "description": "Review not found"
+            }
+          }
+        },
+        "put": {
+          "tags": [
+            "reviews"
+          ],
+          "parameters": [
+            {
+              "in": "path",
+              "name": "id",
+              "required": true,
+              "type": "integer",
+              "description": "Review ID"
+            },
+            {
+              "in": "body",
+              "name": "review",
+              "description": "Properties to update",
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "ID_book": {
+                    "type": "integer"
+                  },
+                  "ID_user": {
+                    "type": "integer"
+                  },
+                  "contents": {
+                    "type": "string"
+                  },
+                  "date": {
+                    "type": "string"
+                  },
+                  "rate": {
+                    "type": "integer"
+                  }
+                }
+              }
+            }
+          ],
+          "description": "Use to update a review",
+          "responses": {
+            "201": {
+              "description": "Review updated successfully"
+            },
+            "401": {
+              "description": "Unauthorized for this user"
+            },
+            "404": {
+              "description": "Review not found"
+            }
+          }
+        }
+      },
+      "/api/users": {
+        "get": {
+          "tags": [
+            "users"
+          ],
+          "description": "Use to show all users",
+          "responses": {
+            "200": {
+              "description": "A successful response"
+            },
+            "401": {
+              "description": "Unauthorized for a user"
+            }
+          }
+        },
+        "post": {
+          "tags": [
+            "users"
+          ],
+          "parameters": [
+            {
+              "in": "body",
+              "name": "user",
+              "description": "Adding user to DB",
+              "schema": {
+                "type": "object",
+                "required": [
+                  "nickname",
+                  "login",
+                  "password",
+                  "email"
+                ],
+                "properties": {
+                  "nickname": {
+                    "type": "string"
+                  },
+                  "login": {
+                    "type": "string"
+                  },
+                  "password": {
+                    "type": "string"
+                  },
+                  "email": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          ],
+          "description": "Use to register a user",
+          "responses": {
+            "201": {
+              "description": "User registered successfully"
+            },
+            "409": {
+              "description": "User already exists"
+            },
+            "422": {
+              "description": "Missing data - password, login, email or nickname"
+            }
+          }
+        }
+      },
+      "/api/users/{id}": {
+        "get": {
+          "tags": [
+            "users"
+          ],
+          "parameters": [
+            {
+              "in": "path",
+              "name": "id",
+              "required": true,
+              "type": "integer",
+              "description": "User ID"
+            }
+          ],
+          "description": "Use to show a user by ID",
+          "responses": {
+            "200": {
+              "description": "A successful response"
+            },
+            "401": {
+              "description": "Unauthorized for a user"
+            },
+            "404": {
+              "description": "User not found"
+            }
+          }
+        }
+      },
+      "/api/users/{id}/list": {
+        "get": {
+          "tags": [
+            "users"
+          ],
+          "parameters": [
+            {
+              "in": "path",
+              "name": "id",
+              "required": true,
+              "type": "integer",
+              "description": "User ID"
+            }
+          ],
+          "description": "Use to show user`s list of books",
+          "responses": {
+            "200": {
+              "description": "A successful response"
+            },
+            "404": {
+              "description": "User not found"
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "users"
+        ],
+        "security": [
+          {
+            "OAuth2": [
+              "admin"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "user",
+            "description": "Adding book to the list",
+            "schema": {
+              "type": "object",
+              "required": [
+                "ID_book",
+                "ID_user"
+              ],
+              "properties": {
+                "ID_book": {
+                  "type": "integer"
+                },
+                "ID_user": {
+                  "type": "integer"
+                }
+              }
+            }
+          }
+        ],
+        "description": "Use to add a book to the list",
+        "responses": {
+          "201": {
+            "description": "Book added"
+          },
+          "401": {
+            "description": "Unauthorized for this user"
+          }
+        }
+      },
+      "/api/users/{id}/list?ID_book=1": {
+        "delete": {
+          "tags": [
+            "users"
+          ],
+          "parameters": [
+            {
+              "in": "path",
+              "name": "id",
+              "required": true,
+              "type": "integer",
+              "description": "User ID"
+            },
+            {
+              "in": "query",
+              "name": "ID_book",
+              "required": true,
+              "schema": {
+                "type": "integer"
+              },
+              "description": "Book ID"
+            }
+          ],
+          "description": "Use to delete a book from the user`s list",
+          "responses": {
+            "204": {
+              "description": "Book from the list deleted successfully"
+            },
+            "401": {
+              "description": "Unauthorized for this user"
+            },
+            "404": {
+              "description": "Book not found"
+            }
+          }
+        }
+      },
+      "/api/logs": {
+        "get": {
+          "tags": [
+            "logs"
+          ],
+          "description": "gets all logs",
+          "responses": {
+            "200": {
+              "description": "A successful response"
+            },
+            "401": {
+              "description": "Unauthorized for a user"
+            }
+          }
+        }
+      }
+    },
+    "responses": {},
+    "parameters": {},
+    "tags": []
+  },
+  "customOptions": {}
+};
+  url = options.swaggerUrl || url
+  var urls = options.swaggerUrls
+  var customOptions = options.customOptions
+  var spec1 = options.swaggerDoc
+  var swaggerOptions = {
+    spec: spec1,
+    url: url,
+    urls: urls,
+    dom_id: '#swagger-ui',
+    deepLinking: true,
+    presets: [
+      SwaggerUIBundle.presets.apis,
+      SwaggerUIStandalonePreset
+    ],
+    plugins: [
+      SwaggerUIBundle.plugins.DownloadUrl
+    ],
+    layout: "StandaloneLayout"
+  }
+  for (var attrname in customOptions) {
+    swaggerOptions[attrname] = customOptions[attrname];
+  }
+  var ui = SwaggerUIBundle(swaggerOptions)
+
+  if (customOptions.oauth) {
+    ui.initOAuth(customOptions.oauth)
+  }
+
+  if (customOptions.authAction) {
+    ui.authActions.authorize(customOptions.authAction)
+  }
+
+  window.ui = ui
+}
