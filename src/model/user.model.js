@@ -72,6 +72,18 @@ class UserModel extends Model{
                     from: 'users.ID_user',
                     to: 'reviews.ID_user'
                 }
+            },
+            books: {
+                relation: Model.ManyToManyRelation,
+                modelClass: require('./book.model'),
+                join: {
+                    from: 'users.ID_user',
+                    through: {
+                        from: 'lists.ID_user',
+                        to: 'lists.ID_book',
+                    },
+                    to: 'books.ID_book'
+                }
             }
         }
     }
