@@ -30,7 +30,7 @@ wykorzystnanie biblioteki knex. W projekcie został wykorzystany ORM objection.
 
 ## 3. Routingi
 
-[dokumentacja](./resources/Swagger%20UI.html)
+Opisane w dokumentacji, aby zobaczyć dokumentację należy pobrać repozytorium i uruchomić plik z rozszerzeniem ".html" z folderu resources.
 
 ## 4. Wykorzystane biblioteki
 #### Routing
